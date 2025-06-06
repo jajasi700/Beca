@@ -68,9 +68,9 @@ def consultar_beca():
 
         color_titulo = obtener_color_titulo(titulo)
 
-        # Mostramos en consola de Render:
-        print(f"[CONSULTA] Documento: {documento} | Tipo: {TIPOS_DOCUMENTO.get(tipo_doc, tipo_doc)}")
-        print(f"[RESULTADO] {titulo} - {mensaje}")
+        # Mostrar en consola de Render
+        print(f"[CONSULTA] Documento: {documento} | Tipo: {TIPOS_DOCUMENTO.get(tipo_doc, tipo_doc)}", flush=True)
+        print(f"[RESULTADO] {titulo} - {mensaje}", flush=True)
 
         return jsonify({
             "documento": documento,
@@ -79,10 +79,10 @@ def consultar_beca():
             "color_titulo": color_titulo
         })
     except requests.RequestException as e:
-        print(f"[ERROR DE CONEXIÓN] {e}")
+        print(f"[ERROR DE CONEXIÓN] {e}", flush=True)
         return jsonify({"error": f"Error de conexión o consulta: {e}"}), 500
     except ValueError:
-        print("[ERROR] No se pudo interpretar la respuesta del servidor.")
+        print("[ERROR] No se pudo interpretar la respuesta del servidor.", flush=True)
         return jsonify({"error": "No se pudo interpretar la respuesta del servidor."}), 500
 
 if __name__ == '__main__':
