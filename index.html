@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Consulta Beca Butiá Web</title>
+<style>
+  body { font-family: monospace; background: #111; color: #eee; padding: 20px; }
+  label, select, input { font-size: 1rem; margin: 5px 0; }
+  #resultado { margin-top: 20px; white-space: pre-wrap; padding: 10px; background: #222; border-radius: 5px; min-height: 150px; }
+  .green { color: #4CAF50; }
+  .red { color: #F44336; }
+  .yellow { color: #FFC107; }
+</style>
+</head>
+<body>
+
+<h2>Consulta Beca Butiá</h2>
+
+<form id="formConsulta">
+  <label for="documento">Documento (solo números):</label><br />
+  <input type="text" id="documento" name="documento" pattern="\d+" required /><br />
+
+  <label for="tipo_doc">Tipo de Documento:</label><br />
+  <select id="tipo_doc" name="tipo_doc" required>
+    <option value="">Seleccione...</option>
+    <option value="1">CI Uruguay</option>
+    <option value="3">DNI Argentina</option>
+    <option value="4">RG Brasil</option>
+    <option value="5">CPF Brasil</option>
+    <option value="6">CI Paraguay</option>
+    <option value="7">Pasaporte</option>
+  </select><br />
+
+  <button type="submit">Consultar</button>
+</form>
+
+<div id="resultado"></div>
+
+<script>
+  const form = document.getElementById('formConsulta');
+  const resultadoDiv = document.getElementById('resultado');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    resultadoDiv.textContent = "Consultando...";
+    const documento = form.documento.value.trim();
+    const tipo_doc = form.tipo_doc.value;
+
+    try {
+      const res = await fetch('/consultar_beca', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ documento, tipo_doc })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        resultadoDiv.innerHTML = `
+          Documento: ${data.documento}\n
+          <span class="${data.color}">Título: ${data.titulo}</span>\n
+          Mensaje:\n${data.mensaje}
+        `.replace(/\n/g, '<br>');
+      } else {
+        resultadoDiv.textContent = "Error: " + (data.error || 'Error desconocido');
+      }
+    } catch (error) {
+      resultadoDiv.textContent = "Error de conexión: " + error.message;
+    }
+  });
+</script>
+
+</body>
+</html>
