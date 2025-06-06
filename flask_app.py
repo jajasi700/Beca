@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 import requests
 import re
+import os
 
 app = Flask(__name__)
 
@@ -27,7 +28,6 @@ def limpiar_html(texto):
     return texto_limpio.strip()
 
 def obtener_color_titulo(titulo):
-    # No se puede enviar colores a front, lo omitimos o enviamos texto plano
     titulo_lower = titulo.lower()
     if "beneficiario" in titulo_lower and "no" not in titulo_lower:
         return "green"
@@ -39,7 +39,6 @@ def obtener_color_titulo(titulo):
 @app.route('/')
 @app.route('/index.html')
 def index():
-    # Sirve el archivo index.html que esté en la misma carpeta que app.py
     return send_from_directory('.', 'index.html')
 
 @app.route('/consultar_beca', methods=['POST'])
@@ -81,4 +80,5 @@ def consultar_beca():
         return jsonify({"error": "No se pudo interpretar la respuesta del servidor."}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
